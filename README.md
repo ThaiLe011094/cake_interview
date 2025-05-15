@@ -4,9 +4,6 @@ b { color: Blue }
 g { color: Green }
 </style>
 
-# cake_interview
-This repo is for Cake's interview and for reference only
-
 # Requirement
 ## Problem Statement
  - The task involves two SFTP destinations, referred to as <source> and <target>.
@@ -35,4 +32,22 @@ This repo is for Cake's interview and for reference only
  - The level of abstraction in your API(s). Given that business requirements are subject to change, evaluate how adaptable your solution is if the data source transitions from SFTP to Object Storage.
  - The extensibility of your API(s). Assess whether it is feasible to incorporate additional transformations before loading files into the target system without significant effort.
  - Your strategy for handling anomalies. For instance, if file sizes increase dramatically from kilobytes to gigabytes, how does your solution accommodate this change in scale?
+
+
+# References
+ - [Configuration Reference](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)
+ - [Airflow Official Docker Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml)
+
+# How to run
+## Setup docker if not installed yet
+
+
+## Invoke some commands
+Run these commands <r>without</r> the `$`, `$` means to be executed by <g>normal user</g>.
+```bash
+$ chmod +x init.sh
+$ ./init.sh
+$ sudo docker compose airflow-init
+$ sudo docker compose up
+```
 
