@@ -1,11 +1,11 @@
-# cake_interview
-This repo is for Cake's interview and for reference only
-
 <style>
 r { color: Red }
 b { color: Blue }
 g { color: Green }
 </style>
+
+# cake_interview
+This repo is for Cake's interview and for reference only
 
 # Requirement
 ## Problem Statement
