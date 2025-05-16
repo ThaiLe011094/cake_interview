@@ -1,15 +1,15 @@
 <style>
-r { color: Red }
-b { color: Blue }
-g { color: Green }
+r { color: Crimson }
+b { color: RoyalBlue }
+g { color: Lime }
 </style>
 
 # Requirement
 ## Problem Statement
- - The task involves two SFTP destinations, referred to as <source> and <target>.
- - Your objective is to develop an Apache Airflow DAG that facilitates the transfer of files from the SFTP server at <source> to the SFTP server at <target> and ensures the preservation of the original directory structure.
- - The synchronization process should be unidirectional; hence, any modification made on <target> must not impact the <source>.
- - Deleted files on SFTP server at <source> must remain intact on <target> server.
+ - The task involves two SFTP destinations, referred to as \<<b>source</b>> and \<<b>target</b>>.
+ - Your objective is to develop an Apache Airflow DAG that facilitates the transfer of files from the SFTP server at \<<b>source</b>> to the SFTP server at \<<b>target</b>> and ensures the preservation of the original directory structure.
+ - The synchronization process should be unidirectional; hence, any modification made on \<<b>target</b>> must not impact the \<<b>source</b>>.
+ - Deleted files on SFTP server at \<<b>source</b>> must remain intact on \<<b>target</b>> server.
 ## Examples:
  - On March 1st, 2024, when a file named `sftp://<source>/a/b/c/file_1.txt` is detected on the source server, it should be replicated to `sftp://<target>/a/b/c/file_1.txt` on the destination server.
  - On March 2nd, 2024, a file named `sftp://<source>/a/b/c/file_2.txt` appears on the source server and subsequently should be transferred to `sftp://<target>/a/b/c/file_2.txt` on the destination server.
@@ -47,7 +47,7 @@ Run these commands <r>without</r> the `$`, `$` means to be executed by <g>normal
 ```bash
 $ chmod +x init.sh
 $ ./init.sh
-$ sudo docker compose airflow-init
-$ sudo docker compose up
+$ sudo docker compose airflow-init  # we only need this once
+$ sudo docker compose build --no-cache  # this can be run in any time, but it's better to be run after changing the requirement
+$ sudo docker compose up  # this can also be run in any time
 ```
-
