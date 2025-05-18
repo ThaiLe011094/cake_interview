@@ -37,6 +37,9 @@ g { color: Lime }
 # References
  - [Configuration Reference](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)
  - [Airflow Official Docker Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml)
+ - [Python Stat Module](https://stackoverflow.com/questions/56098463/how-works-pythons-stat-module)
+ - [Stat](https://docs.python.org/3/library/stat.html)
+ - [Sftp Container](https://hub.docker.com/r/atmoz/sftp)
 
 # How to run
 ## Setup docker if not installed yet
@@ -51,3 +54,68 @@ $ sudo docker compose airflow-init  # we only need this once
 $ sudo docker compose build --no-cache  # this can be run in any time, but it's better to be run after changing the requirement
 $ sudo docker compose up  # this can also be run in any time
 ```
+Since this repo is for completing the the interview task, so below are some commands to populate the files
+```bash
+# Let's assume that we're in the code directory
+$ mkdir -p ./tests/source_data/a/b/c
+# Since we already mounted the volume from the sftp folder to folder in tests directory
+# All things changed in the tests directory will be reflected on the sftp folder
+# Let's make some text files and a bin file in the sfpt_source directory only
+$ echo "Test content 1" > tests/source_data/a/b/c/file_1.txt
+$ echo "Test content 2" > tests/source_data/a/b/c/file_2.txt
+$ head -c 10M /dev/zero > tests/source_data/a/b/c/large_file_10M.bin
+
+```
+
+## Add connection to Airflow
+Although we can add connection to Airflow UI Connection via command line, writing data into Airflow Admin UI is more recommended.
+Get into `http://localhost:8080/connections` or `http://<airflow-hosted-address>/connections`
+The connection info is:
+Source SFTP:
+```json
+{
+    "conn_id": "source_sftp_conn",
+    "conn_type": "sftp",
+    "host": "source-sftp",
+    "username": "testuser",
+    "password": "testpass",
+    "port": 22
+}
+```
+Target SFTP:
+```json
+{
+    "conn_id": "target_sftp_conn",
+    "conn_type": "sftp",
+    "host": "target-sftp",
+    "username": "testuser",
+    "password": "testpass",
+    "port": 22
+}
+```
+## Run Airflow DAG
+Get into `http://localhost:8080/dags/sftp_sync/` or `http://<airflow-hosted-address>/dags/sftp_sync/` then click on Triger to run the DAG
+
+## Check for the files on the sftp server
+As in the configuration in docker-compose.yaml, we configured the sftp-source with port 2222, and sftp-source with port 2223.  
+To check files in them, we can follow this command line:  
+```bash
+# Sample: sftp -P <port> <username>@<host>
+# To test files' existence in target-sftp, we run this
+$ sftp -P 2223 testuser@localhost
+# To list files/folders
+$ ls -la
+# Then we can cd in to the directory like in the bash shell
+$ cd upload
+```
+# Limitation
+Since this code is for serving some local quick and low-size files, there will be some limitation, but first we can see something like this:
+ - This code will work only on local or self-hosted platform, not yet runable on Cloud Storage.
+ - The files are relative small and not too much, the code was only written to handle this case. Also not using streaming as always is for trading off the easy debug.
+
+# Further Improvement
+Although there are limitations, at least listed in the previous section, we can also improve it in later time:
+ - Add feature for streaming big files. We might need to raise a flag to know if it's a big file to use the streaming.
+ - Change writing locally to io.BytesIO() to write into buffer instead.
+ - We can use chunked streaming with buffer to control memory usage, transfer speed, and error handling.
+ - Add feature to interact with Cloud Storage, as in the code, we need to fix a bit to seperate the task for downloading and uploading. Then transfering to Cloud Storage will be implemented in ease.
