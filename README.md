@@ -3,17 +3,19 @@ r { color: Crimson }
 b { color: RoyalBlue }
 g { color: Lime }
 </style>
-
+  
 # Requirement
 ## Problem Statement
  - The task involves two SFTP destinations, referred to as \<<b>source</b>> and \<<b>target</b>>.
  - Your objective is to develop an Apache Airflow DAG that facilitates the transfer of files from the SFTP server at \<<b>source</b>> to the SFTP server at \<<b>target</b>> and ensures the preservation of the original directory structure.
  - The synchronization process should be unidirectional; hence, any modification made on \<<b>target</b>> must not impact the \<<b>source</b>>.
  - Deleted files on SFTP server at \<<b>source</b>> must remain intact on \<<b>target</b>> server.
+
 ## Examples:
  - On March 1st, 2024, when a file named `sftp://<source>/a/b/c/file_1.txt` is detected on the source server, it should be replicated to `sftp://<target>/a/b/c/file_1.txt` on the destination server.
  - On March 2nd, 2024, a file named `sftp://<source>/a/b/c/file_2.txt` appears on the source server and subsequently should be transferred to `sftp://<target>/a/b/c/file_2.txt` on the destination server.
  - On March 3rd, 2024, a file named `sftp://<source>/a/b/c/file_3.txt` appears on the source server and should then be transferred to `sftp://<target>/a/b/c/file_3.txt` on the destination server.
+
 ## Expected Outcome
  - Candidates are expected to provide a GitHub public repository as following:
  - Use separated commits that reflect your incremental development and refactoring. Pure atomic commits are not expected, and don’t squash them.
@@ -24,8 +26,10 @@ g { color: Lime }
  - An explanation of assumptions made, decisions taken, and any trade-offs considered.
  - One or more DAG file(s).
  - Any additional plugins required for the project.
+
 ## What We <r>Don’t</r> Expect
  - A comprehensive, production-ready ETL/ELT solution that is agnostic to data sources and destinations
+
 ## What We Assess
  - The functionality of a runnable Airflow DAG that accurately achieves the specified result.
  - The candidate‘s adherence to a consistent and clean coding style.
@@ -34,19 +38,14 @@ g { color: Lime }
  - Your strategy for handling anomalies. For instance, if file sizes increase dramatically from kilobytes to gigabytes, how does your solution accommodate this change in scale?
 
 
-# References
- - [Configuration Reference](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)
- - [Airflow Official Docker Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml)
- - [Python Stat Module](https://stackoverflow.com/questions/56098463/how-works-pythons-stat-module)
- - [Stat](https://docs.python.org/3/library/stat.html)
- - [Sftp Container](https://hub.docker.com/r/atmoz/sftp)
-
 # How to run
 ## Setup docker if not installed yet
-
+Follow this [official document](https://docs.docker.com/engine/install/) for installing Docker Engine and its dependencies, plugins.  
+<r>**Note:**</r> Consider adjusting resource when using docker. Please follow this [document](https://docs.docker.com/engine/containers/resource_constraints/).  
+<g>**Example:**</g> [How to Limit Docker Memory and CPU Usage](https://phoenixnap.com/kb/docker-memory-and-cpu-limit).
 
 ## Invoke some commands
-Run these commands <r>without</r> the `$`, `$` means to be executed by <g>normal user</g>.
+Run these commands <r>**without**</r> the `$`, `$` means to be executed by <g>**normal user**</g>.
 ```bash
 $ chmod +x init.sh
 $ ./init.sh
@@ -68,8 +67,8 @@ $ head -c 10M /dev/zero > tests/source_data/a/b/c/large_file_10M.bin
 ```
 
 ## Add connection to Airflow
-Although we can add connection to Airflow UI Connection via command line, writing data into Airflow Admin UI is more recommended.
-Get into `http://localhost:8080/connections` or `http://<airflow-hosted-address>/connections`
+Although we can add connection to Airflow UI Connection via command line, writing data into Airflow Admin UI is more recommended.  
+Get into `http://localhost:8080/connections` or `http://<airflow-hosted-address>/connections`.  
 The connection info is:
 Source SFTP:
 ```json
@@ -94,7 +93,7 @@ Target SFTP:
 }
 ```
 ## Run Airflow DAG
-Get into `http://localhost:8080/dags/sftp_sync/` or `http://<airflow-hosted-address>/dags/sftp_sync/` then click on Triger to run the DAG
+Get into `http://localhost:8080/dags/sftp_sync/` or `http://<airflow-hosted-address>/dags/sftp_sync/` then click on Triger to run the DAG.
 
 ## Check for the files on the sftp server
 As in the configuration in docker-compose.yaml, we configured the sftp-source with port 2222, and sftp-source with port 2223.  
@@ -108,10 +107,13 @@ $ ls -la
 # Then we can cd in to the directory like in the bash shell
 $ cd upload
 ```
+
+
 # Limitation
 Since this code is for serving some local quick and low-size files, there will be some limitation, but first we can see something like this:
  - This code will work only on local or self-hosted platform, not yet runable on Cloud Storage.
  - The files are relative small and not too much, the code was only written to handle this case. Also not using streaming as always is for trading off the easy debug.
+
 
 # Further Improvement
 Although there are limitations, at least listed in the previous section, we can also improve it in later time:
@@ -119,3 +121,14 @@ Although there are limitations, at least listed in the previous section, we can 
  - Change writing locally to io.BytesIO() to write into buffer instead.
  - We can use chunked streaming with buffer to control memory usage, transfer speed, and error handling.
  - Add feature to interact with Cloud Storage, as in the code, we need to fix a bit to seperate the task for downloading and uploading. Then transfering to Cloud Storage will be implemented in ease.
+
+
+# References
+ - [Configuration Reference](https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html)
+ - [Airflow Official Docker Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml)
+ - [Docker Installation](https://docs.docker.com/engine/install/)
+ - [Docker Resource Constraints](https://docs.docker.com/engine/containers/resource_constraints/)
+ - [How to Limit Docker Memory and CPU Usage](https://phoenixnap.com/kb/docker-memory-and-cpu-limit)
+ - [Sftp Container](https://hub.docker.com/r/atmoz/sftp)
+ - [Python Stat Module](https://docs.python.org/3/library/stat.html)
+ - [How to Works Python Stat Module](https://stackoverflow.com/questions/56098463/how-works-pythons-stat-module)
