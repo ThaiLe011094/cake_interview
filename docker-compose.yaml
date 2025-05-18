@@ -101,6 +101,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
+    networks:
+      - airflow_net
     restart: always
 
   redis:
@@ -115,6 +117,8 @@ services:
       timeout: 30s
       retries: 50
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
 
   airflow-apiserver:
@@ -128,6 +132,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -143,6 +149,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -158,6 +166,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -181,6 +191,8 @@ services:
       # Required to handle warm shutdown of the celery workers properly
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -198,6 +210,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -208,6 +222,8 @@ services:
     <<: *airflow-common
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
+    networks:
+      - airflow_net
     command:
       - -c
       - |
@@ -300,6 +316,8 @@ services:
     <<: *airflow-common
     profiles:
       - debug
+    networks:
+      - airflow_net
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: "0"
@@ -327,11 +345,39 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - airflow_net
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
+  source-sftp:
+    image: atmoz/sftp
+    volumes:
+      - ./tests/source_data:/home/testuser/upload
+    command: testuser:testpass:::upload
+    ports:
+      - "2222:22"
+    networks:
+      - airflow_net
+    restart: always
+
+  target-sftp:
+    image: atmoz/sftp
+    volumes:
+      - ./tests/target_data:/home/testuser/upload
+    command: testuser:testpass:::upload
+    ports:
+      - "2223:22"
+    networks:
+      - airflow_net
+    restart: always
+
 volumes:
   postgres-db-volume:
+
+networks:
+  airflow_net:
+    driver: bridge
