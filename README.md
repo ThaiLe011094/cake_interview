@@ -121,6 +121,7 @@ Although there are limitations, at least listed in the previous section, we can 
  - Change writing locally to io.BytesIO() to write into buffer instead.
  - We can use chunked streaming with buffer to control memory usage, transfer speed, and error handling.
  - Add feature to interact with Cloud Storage, as in the code, we need to fix a bit to seperate the task for downloading and uploading. Then transfering to Cloud Storage will be implemented in ease.
+ - Add precommit for checking lint, etc.
 
 
 # References
